@@ -19,3 +19,7 @@ def erdos_renyi_v2(N, p):
     g = random_graph(N, deg_sampler=deg_sample, directed=False)
     random_rewire(g, "erdos")
     return g
+
+
+def barabasi_albert(N, m=3):
+    return price_network(N, m=m, directed=False)
