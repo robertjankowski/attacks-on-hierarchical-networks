@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import networkx as nx
 
 
 def load_matplotlib():
@@ -29,3 +30,28 @@ def save_figure(filename: str):
         plt.savefig(filename, bbox_inches='tight')
     else:
         print('Error. Cannot save figure, unsupported extension: [{}]'.format(extension))
+
+
+def draw_network(g: nx.Graph, ax=None, pos=None, node_size_list=None, node_size_scale=10,
+                 edge_alpha=0.1, node_border_color='black', node_border_width=0.5):
+    """
+    Draw nx.Graph on matplotlib axis
+    :param g: nx.Graph
+    :param ax: matplotlib canvas
+    :param pos: position of nodes (e.g. from nx.spring_layout(g))
+    :param node_size_list: list of node sizes
+    :param edge_alpha: float
+    :param node_border_color: float
+    :param node_border_width: float
+    """
+    if pos is None:
+        pos = nx.spring_layout(g)
+    if node_size_list is None:
+        node_size_list = degree_node_size(g, node_size_scale)
+    nx.draw_networkx_edges(g, ax=ax, alpha=edge_alpha, pos=pos, connectionstyle='arc3, rad = 0.1')
+    nx.draw_networkx_nodes(g, node_size=node_size_list, ax=ax, pos=pos,
+                           edgecolors=node_border_color, linewidths=node_border_width)
+
+
+def degree_node_size(g: nx.Graph, scale=10):
+    return [scale * v for v in dict(g.degree).values()]
