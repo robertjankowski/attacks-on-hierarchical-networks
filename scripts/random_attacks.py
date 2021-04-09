@@ -2,8 +2,10 @@ from graph_tool.all import *
 import numpy as np
 import sys
 from tqdm import tqdm
+import pandas as pd
 
 sys.path.append('..')
+from scripts.hrg import load_dendrogram, generate_hrg
 from scripts.giant_connected_component import size_gcc
 from scripts.generate_network import erdos_renyi_v2, barabasi_albert
 
@@ -39,6 +41,23 @@ def simulate_attack_barabasi_albert(N, ps, m=3, random_attack=True, type='node',
         sizes_per_p = []
         for _ in range(ntimes):
             g = barabasi_albert(N, m)
+            if random_attack:
+                sizes_per_p.append(get_rescaled_gcc_size_after_random_attack(g, p, type))
+            else:
+                sizes_per_p.append(get_rescaled_gcc_size_after_intentional_attack(g, p))
+        mean_sizes.append(np.mean(sizes_per_p))
+        std_sizes.append(np.std(sizes_per_p))
+    return mean_sizes, std_sizes
+
+
+def simulate_attack_hrg(dendrogram_path: str, ps, random_attack=True, type='node', ntimes=1):
+    mean_sizes = []
+    std_sizes = []
+    dendrogram = load_dendrogram(dendrogram_path)
+    for p in tqdm(ps):
+        sizes_per_p = []
+        for _ in range(ntimes):
+            g = generate_hrg(dendrogram)
             if random_attack:
                 sizes_per_p.append(get_rescaled_gcc_size_after_random_attack(g, p, type))
             else:
@@ -85,3 +104,9 @@ def get_vertices_highest_degree(g, p):
     for d, v in zip(g.degree_property_map("total").a, g.get_vertices()):
         deg_vert.append((d, v))
     return sorted(deg_vert, key=lambda x: x[0], reverse=True)[:int((g.num_vertices() * p))]
+
+
+def save_output(mean_sizes, std_sizes, path: str):
+    df = pd.DataFrame(data=zip(mean_sizes, std_sizes))
+    df.columns = ['mean', 'std']
+    df.to_csv(path, index=False)

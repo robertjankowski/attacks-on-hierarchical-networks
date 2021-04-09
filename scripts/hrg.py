@@ -1,6 +1,10 @@
 import networkx as nx
 from networkx.drawing.nx_agraph import graphviz_layout
 import numpy as np
+import sys
+
+sys.path.append('..')
+from scripts.convert_graphs import nx2gt
 
 
 def load_dendrogram(path: str) -> nx.Graph:
@@ -43,6 +47,49 @@ def load_dendrogram(path: str) -> nx.Graph:
         return dendrogram
 
 
+def total_size(dendrogram: nx.Graph) -> int:
+    return sum(nx.get_node_attributes(dendrogram, 'size').values())
+
+
+def avg_degree(dendrogram: nx.Graph) -> float:
+    """
+    Calculate average degree of a generated network given a dendrogram structure
+
+    :param dendrogram:
+    :return: <k>
+    """
+
+    def calc_E(p, N):
+        return p * N * (N - 1) / 2
+
+    d_g = dendrogram.copy()
+    total_E = 0
+    sizes = total_size(dendrogram)
+
+    for node in d_g.nodes():
+        n = d_g.nodes[node]
+        if 'prob' in n and 'size' in n:
+            total_E += calc_E(n['prob'], n['size'])
+
+    while True:
+        for node in sorted(d_g.nodes()):
+            n = d_g.nodes[node]
+            if 'size' not in n:
+                neighbors = list(d_g.neighbors(node))
+                s = []
+                for nn_node in neighbors:
+                    nn = d_g.nodes[nn_node]
+                    if 'size' in nn:
+                        s.append(nn['size'])
+                if len(s) > 1:
+                    d_g.nodes[node]['size'] = sum(s)
+                    total_E += n['prob'] * min(s)
+        if len(nx.get_node_attributes(d_g, 'size')) == nx.number_of_nodes(d_g):
+            break
+
+    return 2 * total_E / sizes
+
+
 def plot_dendrogram(g, ax=None, node_border_color='black', node_border_width=1):
     pos = graphviz_layout(g, prog='dot')
     nodes_labels = {k: k for k in list(g.nodes())}
@@ -52,7 +99,7 @@ def plot_dendrogram(g, ax=None, node_border_color='black', node_border_width=1):
             edgecolors=node_border_color, linewidths=node_border_width)
 
 
-def generate_hrg(dendrogram: nx.Graph):
+def generate_hrg(dendrogram: nx.Graph, to_gt=True):
     initial_community = {}
 
     start_idx = 0
@@ -68,7 +115,8 @@ def generate_hrg(dendrogram: nx.Graph):
         next_communities = combine_communities(initial_community, dendrogram, visited)
 
         if len(next_communities) == 1:
-            return list(next_communities.values())[0]
+            g = list(next_communities.values())[0]
+            return nx2gt(g) if to_gt else g
         initial_community = next_communities
 
 
