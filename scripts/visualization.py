@@ -1,5 +1,9 @@
 import matplotlib.pyplot as plt
 import networkx as nx
+import numpy as np
+
+COLORS = ['red', 'green', 'blue', 'orange', 'grey', 'violet', 'black']
+COLORS = ['xkcd:' + c for c in COLORS]
 
 
 def load_matplotlib():
@@ -55,3 +59,17 @@ def draw_network(g: nx.Graph, ax=None, pos=None, node_size_list=None, node_size_
 
 def degree_node_size(g: nx.Graph, scale=10):
     return [scale * v for v in dict(g.degree).values()]
+
+
+def plot_giant_connected_component_vs_removed(data, labels, colors=None, ylabel=True):
+    if colors is None:
+        colors = COLORS
+    ps = np.linspace(0, 1, len(data[0]))
+    for d, c, l in zip(data, colors, labels):
+        plt.errorbar(ps, d['mean'], d['std'], color=c, label=l, fmt='-')
+
+    plt.ylim(-0.05, 1.05)
+    if ylabel:
+        plt.ylabel('$N^*/N$', fontsize=18)
+    plt.xlabel('$p^*$', fontsize=18)
+    add_legend(labelspacing=0.5)
