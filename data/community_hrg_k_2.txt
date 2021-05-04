@@ -1,0 +1,40 @@
+# Tree structure #
+O A
+O B
+A C
+A D
+B E
+B F
+C G
+C H
+D I
+D J
+E K
+E L
+F M
+F N
+# Probabilities #
+O 0.01
+A 0.01
+B 0.01
+C 0.001
+D 0.001
+E 0.001
+F 0.001
+G 0.002
+H 0.002
+I 0.002
+J 0.002
+K 0.002
+L 0.002
+M 0.002
+N 0.002
+# Sizes #
+G 1000
+H 1000
+I 1000
+J 1000
+K 1000
+L 1000
+M 1000
+N 1000

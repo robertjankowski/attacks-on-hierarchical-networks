@@ -61,7 +61,7 @@ def degree_node_size(g: nx.Graph, scale=10):
     return [scale * v for v in dict(g.degree).values()]
 
 
-def plot_giant_connected_component_vs_removed(data, labels, colors=None, ylabel=True):
+def plot_giant_connected_component_vs_removed(data, labels, colors=None, ylabel=True, **args):
     if colors is None:
         colors = COLORS
     ps = np.linspace(0, 1, len(data[0]))
@@ -72,4 +72,4 @@ def plot_giant_connected_component_vs_removed(data, labels, colors=None, ylabel=
     if ylabel:
         plt.ylabel('$N^*/N$', fontsize=18)
     plt.xlabel('$p^*$', fontsize=18)
-    add_legend(labelspacing=0.5)
+    add_legend(labelspacing=0.5, **args)
