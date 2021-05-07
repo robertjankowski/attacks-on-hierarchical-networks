@@ -16,10 +16,10 @@ def load_matplotlib():
     plt.rcParams['ytick.direction'] = 'in'
 
 
-def add_legend(loc='best', ncol=1, frameon=False, fontsize=14, labelspacing=0.02):
+def add_legend(loc='best', ncol=1, frameon=False, fontsize=14, labelspacing=0.02, **args):
     plt.legend(fontsize=fontsize, loc=loc, handlelength=1, frameon=frameon,
                borderpad=0.1, ncol=ncol, labelspacing=labelspacing, fancybox=False,
-               columnspacing=0.3)
+               columnspacing=0.3, **args)
 
 
 def save_figure(filename: str):
@@ -61,15 +61,23 @@ def degree_node_size(g: nx.Graph, scale=10):
     return [scale * v for v in dict(g.degree).values()]
 
 
-def plot_giant_connected_component_vs_removed(data, labels, colors=None, ylabel=True, **args):
+def plot_giant_connected_component_vs_removed(data, labels, colors=None, ylabel=True, xlabel=True, legend=True, new_fig=True, **args):
     if colors is None:
         colors = COLORS
     ps = np.linspace(0, 1, len(data[0]))
+
+    if new_fig:
+        plt.figure(figsize=(8, 6))
+    plt.grid(alpha=0.1)
     for d, c, l in zip(data, colors, labels):
         plt.errorbar(ps, d['mean'], d['std'], color=c, label=l, fmt='-')
 
     plt.ylim(-0.05, 1.05)
     if ylabel:
-        plt.ylabel('$N^*/N$', fontsize=18)
-    plt.xlabel('$p^*$', fontsize=18)
-    add_legend(labelspacing=0.5, **args)
+        plt.ylabel('$N^*/N$', fontsize=25)
+    if xlabel:
+        plt.xlabel('$p^*$', fontsize=25)
+    if legend:
+        add_legend(labelspacing=0.5, **args)
+    plt.xticks(fontsize=20)
+    plt.yticks(fontsize=20)
