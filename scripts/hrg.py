@@ -111,17 +111,23 @@ def generate_hrg(dendrogram: nx.Graph, to_gt=True):
         start_idx += size
 
     visited = set()
+    edges_between_communities = []
     while True:
-        next_communities = combine_communities(initial_community, dendrogram, visited)
+        next_communities, new_edges_between_communities = combine_communities(initial_community, dendrogram, visited)
 
+        edges_between_communities.extend(new_edges_between_communities)
         if len(next_communities) == 1:
             g = list(next_communities.values())[0]
-            return nx2gt(g) if to_gt else g
+            if to_gt:
+                return nx2gt(g), edges_between_communities
+            else:
+                return g, edges_between_communities
         initial_community = next_communities
 
 
 def combine_communities(communities: dict, dendrogram: nx.Graph, visited):
     next_communities = {}
+    edges_between_communities = []
     for node1, c1 in communities.items():
         for node2, c2 in communities.items():
             if node1 != node2 and node1 not in visited and node2 not in visited:
@@ -129,17 +135,18 @@ def combine_communities(communities: dict, dendrogram: nx.Graph, visited):
                 n2 = list(set(list(dendrogram.neighbors(node2))) - visited)
                 if n1 == n2:
                     # combine communities
-                    g = connect_communities(dendrogram, n1[0], c1, c2)
+                    g, new_edges_between_communities = connect_communities(dendrogram, n1[0], c1, c2)
                     next_communities[n1[0]] = g
                     visited.add(node1)
                     visited.add(node2)
+                    edges_between_communities.extend(new_edges_between_communities)
                 else:
                     continue
 
-    return next_communities
+    return next_communities, edges_between_communities
 
 
-def connect_communities(dendrogram: nx.Graph, node, c1, c2) -> nx.Graph:
+def connect_communities(dendrogram: nx.Graph, node, c1, c2) -> (nx.Graph, list):
     p = dendrogram.nodes[node]['prob']
     g = nx.compose(c1, c2)
 
@@ -149,5 +156,6 @@ def connect_communities(dendrogram: nx.Graph, node, c1, c2) -> nx.Graph:
     c1_subset = np.random.choice(c1.nodes, size=int(p * N1), replace=True)
     c2_subset = np.random.choice(c2.nodes, size=int(p * N2), replace=True)
 
-    g.add_edges_from(zip(c1_subset, c2_subset))
-    return g
+    new_edges = list(zip(c1_subset, c2_subset))
+    g.add_edges_from(new_edges)
+    return g, new_edges

@@ -2,3 +2,4 @@ matplotlib
 numpy
 tqdm
 networkx
+pandas
