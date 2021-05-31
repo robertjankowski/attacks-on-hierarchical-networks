@@ -17,9 +17,9 @@ def load_matplotlib():
 
 
 def add_legend(loc='best', ncol=1, frameon=False, fontsize=14, labelspacing=0.02, **args):
-    plt.legend(fontsize=fontsize, loc=loc, handlelength=1, frameon=frameon,
-               borderpad=0.1, ncol=ncol, labelspacing=labelspacing, fancybox=False,
-               columnspacing=0.3, **args)
+    return plt.legend(fontsize=fontsize, loc=loc, handlelength=1, frameon=frameon,
+                      borderpad=0.1, ncol=ncol, labelspacing=labelspacing, fancybox=False,
+                      columnspacing=0.3, **args)
 
 
 def save_figure(filename: str):
@@ -61,7 +61,8 @@ def degree_node_size(g: nx.Graph, scale=10):
     return [scale * v for v in dict(g.degree).values()]
 
 
-def plot_giant_connected_component_vs_removed(data, labels, colors=None, ylabel=True, xlabel=True, legend=True, new_fig=True, **args):
+def plot_giant_connected_component_vs_removed(data, labels, colors=None, ylabel=True, xlabel=True, legend=True,
+                                              new_fig=True, error_alpha=0.2, **args):
     if colors is None:
         colors = COLORS
     ps = np.linspace(0, 1, len(data[0]))
@@ -70,7 +71,9 @@ def plot_giant_connected_component_vs_removed(data, labels, colors=None, ylabel=
         plt.figure(figsize=(8, 6))
     plt.grid(alpha=0.1)
     for d, c, l in zip(data, colors, labels):
-        plt.errorbar(ps, d['mean'], d['std'], color=c, label=l, fmt='-')
+        markers, caps, bars = plt.errorbar(ps, d['mean'], d['std'], color=c, label=l, fmt='-')
+        [bar.set_alpha(error_alpha) for bar in bars]
+        [cap.set_alpha(error_alpha) for cap in caps]
 
     plt.ylim(-0.05, 1.05)
     if ylabel:
@@ -78,6 +81,7 @@ def plot_giant_connected_component_vs_removed(data, labels, colors=None, ylabel=
     if xlabel:
         plt.xlabel('$p^*$', fontsize=25)
     if legend:
-        add_legend(labelspacing=0.5, **args)
+        leg = add_legend(labelspacing=0.5, **args)
+        leg._legend_box.align = "left"
     plt.xticks(fontsize=20)
     plt.yticks(fontsize=20)

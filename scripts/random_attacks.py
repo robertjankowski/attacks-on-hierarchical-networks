@@ -76,7 +76,7 @@ def simulate_attack_hrg(dendrogram_path: str, ps, random_attack=True, type='node
     return mean_sizes, std_sizes
 
 
-def simulate_attack_hrg_modification(dendrogram_path: str, ps, random_attack=True, type='node', ntimes=1):
+def simulate_attack_hrg_modification(dendrogram_path: str, ps, random_attack=True, ntimes=1):
     mean_sizes = []
     std_sizes = []
     dendrogram = load_dendrogram(dendrogram_path)
@@ -88,7 +88,8 @@ def simulate_attack_hrg_modification(dendrogram_path: str, ps, random_attack=Tru
                 sizes_per_p.append(
                     get_rescaled_gcc_size_after_random_attack_edge_modified_hrg(g, edges_between_communities, p))
             else:
-                sizes_per_p.append(get_rescaled_gcc_size_after_intentional_attack(g, p))
+                sizes_per_p.append(
+                    get_rescaled_gcc_size_after_intentional_attack_modified_hrg(g, edges_between_communities, p))
         mean_sizes.append(np.mean(sizes_per_p))
         std_sizes.append(np.std(sizes_per_p))
     return mean_sizes, std_sizes
@@ -141,11 +142,32 @@ def get_rescaled_gcc_size_after_intentional_attack(g, p):
     return size_gcc(g) / len(all_vertices)
 
 
+def get_rescaled_gcc_size_after_intentional_attack_modified_hrg(g, edges_between_communities, p):
+    all_vertices = get_vertices(g)
+    vertices = get_vertices_highest_degree_modified_hrg(g, edges_between_communities, p)
+    g.remove_vertex(vertices)
+    return size_gcc(g) / len(all_vertices)
+
+
+def get_vertices_highest_degree_modified_hrg(g, edges_between_communities, p):
+    deg_vert = []
+    for d, v in zip(g.degree_property_map("total").a, g.get_vertices()):
+        deg_vert.append((d, v))
+    sorted_nodes = sorted(deg_vert, key=lambda x: x[0], reverse=True)
+    sorted_nodes = list(map(lambda x: x[1], sorted_nodes))
+    # Do not remove nodes which create stable links
+    stable_nodes = list(sum(edges_between_communities, ()))
+    sorted_nodes = [x for x in sorted_nodes if x not in stable_nodes]
+    return sorted_nodes[:int((g.num_vertices() * p))]
+
+
 def get_vertices_highest_degree(g, p):
     deg_vert = []
     for d, v in zip(g.degree_property_map("total").a, g.get_vertices()):
         deg_vert.append((d, v))
-    return sorted(deg_vert, key=lambda x: x[0], reverse=True)[:int((g.num_vertices() * p))]
+    sorted_nodes = sorted(deg_vert, key=lambda x: x[0], reverse=True)
+    sorted_nodes = list(map(lambda x: x[1], sorted_nodes))
+    return sorted_nodes[:int((g.num_vertices() * p))]
 
 
 def save_output(mean_sizes, std_sizes, path: str):
