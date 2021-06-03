@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 
-COLORS = ['red', 'green', 'blue', 'orange', 'grey', 'violet', 'black']
+COLORS = ['red', 'green', 'blue', 'black', 'grey', 'orange', 'black']
 COLORS = ['xkcd:' + c for c in COLORS]
 
 

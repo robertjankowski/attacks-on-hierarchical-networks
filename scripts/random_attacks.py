@@ -130,23 +130,22 @@ def get_rescaled_gcc_size_after_random_attack_edge(g, p):
     edges = np.random.choice(all_edges, int(len(all_edges) * p), replace=False)
     # set_fast_edge_removal()
     [g.remove_edge(e) for e in edges]
-    # g.remove_edge(edges)
     N = g.num_vertices() if g.num_vertices() != 0 else 1
     return size_gcc(g) / N
 
 
 def get_rescaled_gcc_size_after_intentional_attack(g, p):
-    all_vertices = get_vertices(g)
     vertices = get_vertices_highest_degree(g, p)
     g.remove_vertex(vertices)
-    return size_gcc(g) / len(all_vertices)
+    N = g.num_vertices() if g.num_vertices() != 0 else 1
+    return size_gcc(g) / N
 
 
 def get_rescaled_gcc_size_after_intentional_attack_modified_hrg(g, edges_between_communities, p):
-    all_vertices = get_vertices(g)
     vertices = get_vertices_highest_degree_modified_hrg(g, edges_between_communities, p)
     g.remove_vertex(vertices)
-    return size_gcc(g) / len(all_vertices)
+    N = g.num_vertices() if g.num_vertices() != 0 else 1
+    return size_gcc(g) / N
 
 
 def get_vertices_highest_degree_modified_hrg(g, edges_between_communities, p):
