@@ -76,7 +76,7 @@ sum of all edges at level \(i\). At each level we have \[\begin{aligned}
     E_0 &= \frac{1}{2} p_O (N_A + N_B) (N_A + N_B - 1).\end{aligned}\]
 
 ![A dendrogram used for generating hierarchical random
-graphs.](figures/dendrogram_example.pdf)
+graphs.](plots/dendrogram_example.png)
 
 <div id="tab:probs">
 
@@ -107,7 +107,7 @@ An example realization of the HRG is depicted in Fig.
 
 ![Example realisation of the HRG from dendrogram Fig.
 [1](#fig:dendrogram_example) and set of probabilities Tab.
-[1](#tab:probs) (\(N=8000\)).](figures/hrg_test_small.pdf)
+[1](#tab:probs) (\(N=8000\)).](plots/example_network_pres.png)
 
 ## Attacks on networks
 
@@ -151,12 +151,12 @@ HRG almost matches the ER graph.
 connected component and the percent of randomly removed edges \(p^*\).
 (a) All networks have \(\left< k \right> \approx 6\). (b) All networks
 have
-\(\left< k \right> \approx 2\).](figures/random_attack_small_k_6.pdf)
+\(\left< k \right> \approx 2\).](plots/random_attack_small_k_6.png)
 ![Random breakdowns. Relation between the size of the rescaled giant
 connected component and the percent of randomly removed edges \(p^*\).
 (a) All networks have \(\left< k \right> \approx 6\). (b) All networks
 have
-\(\left< k \right> \approx 2\).](figures/random_attack_small_k_2.pdf)
+\(\left< k \right> \approx 2\).](plots/random_attack_small_k_2.png)
 
 ## Intentional attacks
 
@@ -171,12 +171,12 @@ However, the impact is more visible for \(\left<k \right> =6\).
 connected component and the percent of removed nodes with the highest
 degree \(p^*\). (a) All networks have \(\left< k \right> \approx 6\).
 (b) All networks have
-\(\left< k \right> \approx 2\).](figures/intentional_attacks_small_k_6.pdf)
+\(\left< k \right> \approx 2\).](plots/intentional_attacks_small_k_6.png)
 ![Intentional attacks. Relation between the size of the rescaled giant
 connected component and the percent of removed nodes with the highest
 degree \(p^*\). (a) All networks have \(\left< k \right> \approx 6\).
 (b) All networks have
-\(\left< k \right> \approx 2\).](figures/intentional_attacks_small_k_2.pdf)
+\(\left< k \right> \approx 2\).](plots/intentional_attacks_small_k_2.png)
 
 # Conclusions
 
